@@ -1,4 +1,7 @@
-﻿using System;
+﻿using GestorRickAndMorty.Controller;
+using GestorRickAndMorty.Model;
+using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 using static GestorRickAndMorty.View.CharacterView;
@@ -19,11 +22,10 @@ namespace GestorRickAndMorty
                     switch (opc)
                     {
                         case 1:
-                            Console.WriteLine("Mostramos consulta API");
+                            GetCharacter();
                             break;
                         case 2:
                             Console.WriteLine("Filtramos Id API");
-                            
                             break;
                         case 3:
                             Console.WriteLine("Agregamos nombres a la Lista API");
@@ -36,6 +38,13 @@ namespace GestorRickAndMorty
                     Console.WriteLine("Ha ocurrido un error, vuelve a intentarlo"); ;
                 }
             }
+        }
+        public async static void GetCharacter()
+        {
+            CharacterController controller = new CharacterController();
+            Console.WriteLine("Introduce el nombre del personaje que quieres mostrar.");
+            string name = Console.ReadLine();
+            SavedItem character = await controller.GetCharacterAsync(name);
         }
     }
 }
