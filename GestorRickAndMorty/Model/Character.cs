@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GestorRickAndMorty.Model
 {
-    internal class Character
+    public class Character
     {
         public string Name { get; set; } = "";
         public string Status { get; set; } = "";

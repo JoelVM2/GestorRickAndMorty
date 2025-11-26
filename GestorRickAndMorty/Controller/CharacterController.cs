@@ -20,7 +20,6 @@ namespace GestorRickAndMorty.Controller
 
             try
             {
-                // Usamos Uri.EscapeDataString para nombres con espacios o caracteres especiales
                 var url = $"https://rickandmortyapi.com/api/character/?name={Uri.EscapeDataString(name)}";
                 var response = await client.GetAsync(url);
 
@@ -31,7 +30,12 @@ namespace GestorRickAndMorty.Controller
                 }
 
                 var content = await response.Content.ReadAsStringAsync();
-                ApiResponse? apiResponse = JsonSerializer.Deserialize<ApiResponse>(content);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                ApiResponse? apiResponse = JsonSerializer.Deserialize<ApiResponse>(content, options);
 
                 if (apiResponse?.Results == null || apiResponse.Results.Count == 0)
                 {
@@ -39,12 +43,9 @@ namespace GestorRickAndMorty.Controller
                     return null;
                 }
 
-                // Usamos FirstOrDefault para evitar excepción si no hay resultados
                 Character character = apiResponse.Results.FirstOrDefault();
                 if (character == null)
                     return null;
-
-                Console.WriteLine($"Personaje encontrado: {character.Name}");
 
                 return new SavedItem
                 {
@@ -56,7 +57,6 @@ namespace GestorRickAndMorty.Controller
             }
             catch (Exception ex)
             {
-                // Mostramos el error para depuración
                 Console.WriteLine($"Error al obtener personaje: {ex.Message}");
                 return null;
             }

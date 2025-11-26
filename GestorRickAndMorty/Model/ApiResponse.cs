@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GestorRickAndMorty.Model
 {
-    internal class ApiResponse
+    public class ApiResponse
     {
         public List<Character> Results { get; set; } = new();
     }
