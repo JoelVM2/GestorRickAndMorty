@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 using static GestorRickAndMorty.View.CharacterView;
 namespace GestorRickAndMorty
 {
-    internal class Program
+    public class Program
     {
+        static List<SavedItem>  characterList = new List<SavedItem>();
+
         static async Task Main(string[] args)
         {
-           
             while (true)
             {
                 try
@@ -25,7 +26,7 @@ namespace GestorRickAndMorty
                             GetCharacter();
                             break;
                         case 2:
-                            Console.WriteLine("Filtramos Id API");
+                            ShowList();
                             break;
                         case 3:
                             Console.WriteLine("Agregamos nombres a la Lista API");
@@ -45,6 +46,23 @@ namespace GestorRickAndMorty
             Console.WriteLine("Introduce el nombre del personaje que quieres mostrar.");
             string name = Console.ReadLine();
             SavedItem character = await controller.GetCharacterAsync(name);
+            ShowCharacter(character);
+            Console.WriteLine("¿Quieres guardarlo en tu lista? (s/n)");
+            string confirmation = Console.ReadLine();
+
+            ApiResponse? apiResponse = new ApiResponse();
+            while (string.IsNullOrEmpty(confirmation))
+            {
+                Console.WriteLine("No se puede dejar vacio, introduce el nombre otra vez");
+                confirmation = Console.ReadLine();
+            }
+
+            if (confirmation == "s")
+            {
+                characterList.Add(character);
+                Console.WriteLine("Guardado");
+            }
+
         }
     }
 }
