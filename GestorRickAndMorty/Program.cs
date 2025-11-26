@@ -1,68 +1,79 @@
 ﻿using GestorRickAndMorty.Controller;
 using GestorRickAndMorty.Model;
 using System;
-using System.Text.Json;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using static GestorRickAndMorty.View.CharacterView;
+
 namespace GestorRickAndMorty
 {
     public class Program
     {
-        static List<SavedItem>  characterList = new List<SavedItem>();
+        static List<SavedItem> characterList = new List<SavedItem>();
 
         static async Task Main(string[] args)
         {
             while (true)
             {
-                try
+                ShowMenu();
+                Console.Write("Opción: ");
+                string input = Console.ReadLine();
+
+                if (!int.TryParse(input, out int opc))
                 {
-                    ShowMenu();
-                    int? opc = Convert.ToInt32(Console.ReadLine());
-                    if (opc is null) continue;
-                    switch (opc)
-                    {
-                        case 1:
-                            GetCharacter();
-                            break;
-                        case 2:
-                            ShowList();
-                            break;
-                        case 3:
-                            Console.WriteLine("Agregamos nombres a la Lista API");
-                            
-                            break;
-                    }
+                    Console.WriteLine("Introduce un número válido.");
+                    continue;
                 }
-                catch (Exception ex)
+
+                switch (opc)
                 {
-                    Console.WriteLine("Ha ocurrido un error, vuelve a intentarlo"); ;
+                    case 1:
+                        await GetCharacter();
+                        break;
+
+                    case 2:
+                        ShowList(characterList);
+                        Console.WriteLine("\nPulsa ENTER para volver al menú...");
+                        Console.ReadLine();  // <-- pausa solo aquí
+                        break;
+
+                    case 3:
+                        Console.WriteLine("Saliendo...");
+                        return;
+
+                    default:
+                        Console.WriteLine("Opción no válida.");
+                        break;
                 }
+
             }
         }
-        public async static void GetCharacter()
+
+        public async static Task GetCharacter()
         {
             CharacterController controller = new CharacterController();
-            Console.WriteLine("Introduce el nombre del personaje que quieres mostrar.");
-            string name = Console.ReadLine();
-            SavedItem character = await controller.GetCharacterAsync(name);
-            ShowCharacter(character);
-            Console.WriteLine("¿Quieres guardarlo en tu lista? (s/n)");
-            string confirmation = Console.ReadLine();
+            Console.WriteLine("Introduce el nombre del personaje:");
+            string name = Console.ReadLine() ?? "";
 
-            ApiResponse? apiResponse = new ApiResponse();
-            while (string.IsNullOrEmpty(confirmation))
+            SavedItem character = await controller.GetCharacterAsync(name);
+
+            if (character == null)
             {
-                Console.WriteLine("No se puede dejar vacio, introduce el nombre otra vez");
-                confirmation = Console.ReadLine();
+                Console.Clear();
+                Console.WriteLine("Personaje no encontrado.");
+                return;
             }
+
+            ShowCharacter(character);
+
+            Console.WriteLine("\n¿Quieres guardarlo en tu lista? (s/n)");
+            string confirmation = Console.ReadLine()?.Trim().ToLower();
 
             if (confirmation == "s")
             {
                 characterList.Add(character);
-                Console.WriteLine("Guardado");
+                Console.WriteLine("Guardado correctamente.");
             }
-
         }
     }
 }
